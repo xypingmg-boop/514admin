@@ -1,22 +1,19 @@
 'use client';
-
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import {
-  LayoutDashboard, Package, MessageSquare, LogOut, ChevronRight, Boxes
+  LayoutDashboard, Package, MessageSquare, LogOut, ChevronRight, Boxes, Settings
 } from 'lucide-react';
-
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: '概览' },
   { href: '/dashboard/products', icon: Package, label: '产品管理' },
   { href: '/dashboard/inquiries', icon: MessageSquare, label: '询盘管理' },
+  { href: '/dashboard/settings', icon: Settings, label: '个人设置' },
 ];
-
 export default function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-
   return (
     <aside className="flex flex-col h-screen w-64 shrink-0" style={{
       background: 'var(--surface)',
@@ -34,7 +31,6 @@ export default function Sidebar() {
           <div className="text-xs" style={{ color: 'var(--text-muted)' }}>管理后台</div>
         </div>
       </div>
-
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {navItems.map(({ href, icon: Icon, label }) => {
@@ -57,7 +53,6 @@ export default function Sidebar() {
           );
         })}
       </nav>
-
       {/* User */}
       <div className="px-3 py-4" style={{ borderTop: '1px solid var(--border)' }}>
         <div className="px-3 py-2 mb-2 rounded-xl" style={{ background: 'var(--surface-2)' }}>
