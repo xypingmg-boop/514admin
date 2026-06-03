@@ -1,4 +1,5 @@
 'use client';
+import { createPortal } from 'react-dom';
 
 import { useState, useRef } from 'react';
 import { X, Upload, Loader2, ImageIcon } from 'lucide-react';
@@ -93,12 +94,11 @@ export default function ProductForm({ product, onClose, onSaved }: ProductFormPr
 
   const activeTrans = translations.find(t => t.lang === activeLang)!;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}>
-      <div className="w-full max-w-2xl rounded-2xl fade-in overflow-hidden" style={{
+  return createPortal(
+    <div className="fixed inset-0 z-50 p-4 overflow-y-auto" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', overflowY: 'auto', alignItems: 'flex-start', paddingTop: '60px' }}>
+      <div className="w-full max-w-2xl rounded-2xl fade-in overflow-hidden mx-auto my-4" style={{
         background: 'var(--surface)',
         border: '1px solid var(--border)',
-        maxHeight: '90vh',
         display: 'flex',
         flexDirection: 'column',
       }}>
@@ -290,5 +290,5 @@ export default function ProductForm({ product, onClose, onSaved }: ProductFormPr
         </form>
       </div>
     </div>
-  );
+  , document.body);
 }
