@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
+import api from '@/lib/api';
 
 interface RichEditorProps {
   value: string;
@@ -18,7 +19,6 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
     if (quillRef.current) return;
 
     import('quill').then(({ default: Quill }) => {
-      // import quill css
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = 'https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css';
@@ -28,19 +28,45 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
         theme: 'snow',
         placeholder: placeholder || '产品详情，支持图文混排...',
         modules: {
-          toolbar: [
-            [{ header: [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline'],
-            [{ color: [] }, { background: [] }],
-            [{ list: 'ordered' }, { list: 'bullet' }],
-            [{ align: [] }],
-            ['link', 'image', 'video'],
-            ['clean'],
-          ],
+          toolbar: {
+            container: [
+              [{ header: [1, 2, 3, false] }],
+              ['bold', 'italic', 'underline'],
+              [{ color: [] }, { background: [] }],
+              [{ list: 'ordered' }, { list: 'bullet' }],
+              [{ align: [] }],
+              ['link', 'image', 'video'],
+              ['clean'],
+            ],
+            handlers: {
+              image: () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.click();
+                input.onchange = async () => {
+                  const file = input.files?.[0];
+                  if (!file) return;
+                  try {
+                    const form = new FormData();
+                    form.append('file', file);
+                    const res = await api.post('/api/upload', form, {
+                      headers: { 'Content-Type': 'multipart/form-data' },
+                    });
+                    const url = res.data.url;
+                    const range = quill.getSelection(true);
+                    quill.insertEmbed(range.index, 'image', url);
+                    quill.setSelection(range.index + 1, 0);
+                  } catch (e) {
+                    alert('图片上传失败，请重试');
+                  }
+                };
+              },
+            },
+          },
         },
       });
 
-      // set initial value
       if (value) quill.clipboard.dangerouslyPasteHTML(value);
 
       quill.on('text-change', () => {
@@ -51,12 +77,9 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
       quillRef.current = quill;
     });
 
-    return () => {
-      quillRef.current = null;
-    };
+    return () => { quillRef.current = null; };
   }, []);
 
-  // sync external value changes
   useEffect(() => {
     if (!quillRef.current) return;
     const current = containerRef.current?.querySelector('.ql-editor')?.innerHTML || '';
@@ -72,6 +95,7 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
         .ql-container { background: var(--surface-2); border: none !important; min-height: 200px; font-size: 14px; }
         .ql-editor { color: var(--text); min-height: 200px; line-height: 1.8; }
         .ql-editor.ql-blank::before { color: var(--text-muted); font-style: normal; }
+        .ql-editor img { max-width: 100%; border-radius: 8px; margin: 8px 0; }
         .ql-snow .ql-stroke { stroke: var(--text-muted); }
         .ql-snow .ql-fill { fill: var(--text-muted); }
         .ql-snow .ql-picker { color: var(--text-muted); }
