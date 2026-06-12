@@ -75,7 +75,8 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
         .ql-editor { color: var(--text); min-height: 220px; line-height: 1.8; }
         .ql-editor.ql-blank::before { color: var(--text-muted); font-style: normal; }
         .ql-editor img { max-width: 100%; border-radius: 8px; margin: 8px 0; }
-        .ql-editor video { max-width: 100%; border-radius: 8px; margin: 8px 0; }
+        .ql-editor video { max-width: 100%; width: 100%; border-radius: 8px; margin: 8px 0; display: block; }
+        .ql-editor .ql-video { width: 100%; aspect-ratio: 16/9; border-radius: 8px; margin: 8px 0; display: block; }
         .ql-snow .ql-stroke { stroke: var(--text-muted); }
         .ql-snow .ql-fill { fill: var(--text-muted); }
         .ql-snow .ql-picker { color: var(--text-muted); }
