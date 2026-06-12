@@ -484,7 +484,7 @@ export default function ProductForm({ product, onClose, onSaved }: ProductFormPr
                           className={inputCls} style={inputStyle} onFocus={focusAccent} onBlur={blurBorder} />
                       </div>
                     ))}
-                  </div
+                  </div>
                 </div>
                 <div>
                   <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--text-muted)' }}>排序权重</label>
