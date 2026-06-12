@@ -26,7 +26,7 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
 
       const quill = new Quill(containerRef.current!, {
         theme: 'snow',
-        placeholder: placeholder || '产品详情，支持图文混排...',
+        placeholder: placeholder || '产品详情，支持图文视频混排...',
         modules: {
           toolbar: {
             container: [
@@ -39,29 +39,8 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
               ['clean'],
             ],
             handlers: {
-              image: () => {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'image/*';
-                input.click();
-                input.onchange = async () => {
-                  const file = input.files?.[0];
-                  if (!file) return;
-                  try {
-                    const form = new FormData();
-                    form.append('file', file);
-                    const res = await api.post('/api/upload', form, {
-                      headers: { 'Content-Type': 'multipart/form-data' },
-                    });
-                    const url = res.data.url;
-                    const range = quill.getSelection(true);
-                    quill.insertEmbed(range.index, 'image', url);
-                    quill.setSelection(range.index + 1, 0);
-                  } catch (e) {
-                    alert('图片上传失败，请重试');
-                  }
-                };
-              },
+              image: () => handleUpload(quill, 'image/*', 'image'),
+              video: () => handleUpload(quill, 'video/*', 'video'),
             },
           },
         },
@@ -92,10 +71,11 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
     <div style={{ border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden' }}>
       <style>{`
         .ql-toolbar { background: var(--surface-2); border: none !important; border-bottom: 1px solid var(--border) !important; }
-        .ql-container { background: var(--surface-2); border: none !important; min-height: 200px; font-size: 14px; }
-        .ql-editor { color: var(--text); min-height: 200px; line-height: 1.8; }
+        .ql-container { background: var(--surface-2); border: none !important; min-height: 220px; font-size: 14px; }
+        .ql-editor { color: var(--text); min-height: 220px; line-height: 1.8; }
         .ql-editor.ql-blank::before { color: var(--text-muted); font-style: normal; }
         .ql-editor img { max-width: 100%; border-radius: 8px; margin: 8px 0; }
+        .ql-editor video { max-width: 100%; border-radius: 8px; margin: 8px 0; }
         .ql-snow .ql-stroke { stroke: var(--text-muted); }
         .ql-snow .ql-fill { fill: var(--text-muted); }
         .ql-snow .ql-picker { color: var(--text-muted); }
@@ -106,4 +86,28 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
       <div ref={containerRef} />
     </div>
   );
+}
+
+async function handleUpload(quill: any, accept: string, type: 'image' | 'video') {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = accept;
+  input.click();
+  input.onchange = async () => {
+    const file = input.files?.[0];
+    if (!file) return;
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await api.post('/api/upload', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const url = res.data.url;
+      const range = quill.getSelection(true);
+      quill.insertEmbed(range.index, type, url);
+      quill.setSelection(range.index + 1, 0);
+    } catch (e) {
+      alert(type === 'image' ? '图片上传失败，请重试' : '视频上传失败，请重试');
+    }
+  };
 }
