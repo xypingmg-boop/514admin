@@ -79,6 +79,7 @@ function Section({ title, children, collapsible = false }: {
 export default function ProductForm({ product, onClose, onSaved }: ProductFormProps) {
   const isEdit = !!product?.id;
   const [icon, setIcon] = useState(product?.icon || '');
+  const [categoryName, setCategoryName] = useState<{zh:string,en:string,de:string}>((product as any)?.categoryName || {zh:'',en:'',de:''});
   const [sort, setSort] = useState(product?.sort ?? 0);
   const [visible, setVisible] = useState(product?.visible ?? true);
   const [sku, setSku] = useState(product?.sku || '');
@@ -165,7 +166,7 @@ export default function ProductForm({ product, onClose, onSaved }: ProductFormPr
     const cleanedImages = images.filter(Boolean);
     setSaving(true);
     try {
-      const payload = { icon, imageUrl: cleanedImages[0] || '', images: cleanedImages, sort, visible, sku, price, originalPrice, stock, variants, translations };
+      const payload = { icon, imageUrl: cleanedImages[0] || '', images: cleanedImages, sort, visible, sku, price, originalPrice, stock, variants, translations, categoryName };
       if (isEdit) {
         await api.put(`/api/products/${product!.id}`, payload);
       } else {
@@ -469,6 +470,21 @@ export default function ProductForm({ product, onClose, onSaved }: ProductFormPr
                   <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--text-muted)' }}>图标（emoji）</label>
                   <input type="text" value={icon} onChange={e => setIcon(e.target.value)}
                     placeholder="📦" className={inputCls} style={inputStyle} onFocus={focusAccent} onBlur={blurBorder} />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--text-muted)' }}>
+                    前台分类名称 <span style={{fontWeight:400}}>(留空则使用默认名称)</span>
+                  </label>
+                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
+                    {(['zh','en','de'] as const).map(lang => (
+                      <div key={lang}>
+                        <div className="text-xs mb-1" style={{color:'var(--text-muted)'}}>{lang==='zh'?'中文':lang==='en'?'English':'Deutsch'}</div>
+                        <input type="text" value={categoryName[lang]} onChange={e => setCategoryName(prev => ({...prev,[lang]:e.target.value}))}
+                          placeholder={lang==='zh'?'如：天地盖礼盒':lang==='en'?'e.g. Rigid Box':'z.B. Starre Box'}
+                          className={inputCls} style={inputStyle} onFocus={focusAccent} onBlur={blurBorder} />
+                      </div>
+                    ))}
+                  </div
                 </div>
                 <div>
                   <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--text-muted)' }}>排序权重</label>
