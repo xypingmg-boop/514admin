@@ -6,6 +6,7 @@ import {
   ChevronDown, ChevronUp, GripVertical,
 } from 'lucide-react';
 import api from '@/lib/api';
+import RichEditor from '@/components/RichEditor';
 
 interface Translation {
   lang: string;
@@ -359,14 +360,13 @@ export default function ProductForm({ product, onClose, onSaved }: ProductFormPr
               <div>
                 <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--text-muted)' }}>
                   产品详情页
-                  <span className="ml-1" style={{ fontWeight: 400 }}>支持 HTML，可图文混排</span>
+                  <span className="ml-1" style={{ fontWeight: 400 }}>支持图片、视频、文字混排</span>
                 </label>
-                <textarea value={activeTrans.detail || ''}
-                  onChange={e => updateTrans(activeLang, 'detail', e.target.value)}
-                  placeholder={'详细描述产品材质、规格、使用方法、注意事项...\n\n支持 HTML：<h2>标题</h2><ul><li>列表</li></ul>'}
-                  rows={8} className="w-full px-3 py-2.5 rounded-xl text-sm resize-y"
-                  style={{ ...inputStyle, fontFamily: 'monospace', fontSize: 12, lineHeight: 1.6 }}
-                  onFocus={focusAccent} onBlur={blurBorder} />
+                <RichEditor
+                  value={activeTrans.detail || ''}
+                  onChange={val => updateTrans(activeLang, 'detail', val)}
+                  placeholder="详细描述产品材质、规格、使用方法、注意事项..."
+                />
               </div>
             </Section>
 
