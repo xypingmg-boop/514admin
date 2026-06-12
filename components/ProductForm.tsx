@@ -192,9 +192,9 @@ export default function ProductForm({ product, onClose, onSaved }: ProductFormPr
 
   return createPortal(
     <div className="fixed inset-0 z-50 overflow-y-auto"
-      style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)', paddingTop: 48, paddingBottom: 48 }}>
+      style={{ background: 'var(--bg)', paddingTop: 0, paddingBottom: 0 }}>
       <div className="w-full mx-auto fade-in"
-        style={{ maxWidth: 820, borderRadius: 20, background: 'var(--surface)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column' }}>
+        style={{ maxWidth: '100%', borderRadius: 0, background: 'var(--surface)', border: 'none', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
